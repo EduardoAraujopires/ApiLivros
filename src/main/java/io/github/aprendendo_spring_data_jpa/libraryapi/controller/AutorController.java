@@ -7,6 +7,7 @@ import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.RegistrosDupli
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.Autor;
 import io.github.aprendendo_spring_data_jpa.libraryapi.service.AutorService;
 import io.github.aprendendo_spring_data_jpa.libraryapi.validator.AutorValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,16 +28,12 @@ public class AutorController {
 
 
     @PostMapping
-    public ResponseEntity<Object> salve(@RequestBody AutorDTO autor) {
+    public ResponseEntity<Object> salve(@RequestBody @Valid AutorDTO autor) {
         try {
             Autor autorEntity = autor.saveComDTO();
             service.salvar(autorEntity);
 
-            URI uri = ServletUriComponentsBuilder
-                    .fromCurrentRequestUri()
-                    .path("/{id}")
-                    .buildAndExpand(autorEntity.getId())
-                    .toUri();
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(autorEntity.getId()).toUri();
 
             return ResponseEntity.created(uri).build();
         } catch (RegistrosDuplicadosExceptions e) {
@@ -79,25 +76,21 @@ public class AutorController {
 
 
     @GetMapping
-    public ResponseEntity<List<AutorDTO>> pesquisar(@RequestParam(value = "nome", required = false) String nome,
-                                                    @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
+    public ResponseEntity<List<AutorDTO>> pesquisar(@RequestParam(value = "nome", required = false) String nome, @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
 
 
-        List<Autor> resultado = service.pesquisa(nome, nacionalidade);
-        List<AutorDTO> list = resultado
-                .stream()
-                .map(autor -> new AutorDTO(
-                        autor.getId(),
-                        autor.getNome(),
-                        autor.getDataNascimento(),
-                        autor.getNacionalidade())
-                ).collect(Collectors.toList());
+        List<Autor> resultado = service.pesquisaComExample(nome, nacionalidade);
+        List<AutorDTO> list = resultado.stream().map(autor -> new AutorDTO(
+                autor.getId(),
+                autor.getNome(),
+                autor.getDataNascimento(),
+                autor.getNacionalidade())).collect(Collectors.toList());
 
         return ResponseEntity.ok(list);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> atualizar(@PathVariable("id") String id, @RequestBody AutorDTO autorDTO) {
+    public ResponseEntity<Object> atualizar(@PathVariable("id") String id, @RequestBody @Valid AutorDTO autorDTO) {
         try {
             var idAutor = UUID.fromString(id);
             Optional<Autor> autorOptional = service.obterPorId(idAutor);
@@ -117,5 +110,6 @@ public class AutorController {
             return ResponseEntity.status(erroDto.status()).body(erroDto);
         }
     }
+
 
 }

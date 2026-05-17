@@ -14,7 +14,7 @@ create Table autor(
 #Tabela livro
 create Table livro(
   id uuid not null primary key,
-  isbn varchar (70) not null,
+  isbn varchar (70) not null unique,
   titulo varchar(150) not null,
   data_publicacao date not null,
   preco numeric(18,2),

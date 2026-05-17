@@ -6,6 +6,8 @@ import io.github.aprendendo_spring_data_jpa.libraryapi.repository.AutorRepositor
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.LivroRepository;
 import io.github.aprendendo_spring_data_jpa.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,18 +47,31 @@ public class AutorService {
         autorRepository.delete(autor);
     }
 
-    public List<Autor> pesquisa(String nome, String nacionalidade) {
-        if (nome != null && nacionalidade != null) {
-            return autorRepository.findByNomeAndNacionalidade(nome, nacionalidade);
-        }
-        if (nome != null) {
-            return autorRepository.findByNome(nome);
-        }
+//    public List<Autor> pesquisa(String nome, String nacionalidade) {
+//        if (nome != null && nacionalidade != null) {
+//            return autorRepository.findByNomeAndNacionalidade(nome, nacionalidade);
+//        }
+//        if (nome != null) {
+//            return autorRepository.findByNome(nome);
+//        }
+//
+//        if (nacionalidade != null) {
+//            return autorRepository.findByNacionalidade(nacionalidade);
+//        }
+//        return autorRepository.findAll();
+//    }
 
-        if (nacionalidade != null) {
-            return autorRepository.findByNacionalidade(nacionalidade);
-        }
-        return autorRepository.findAll();
+    public List<Autor> pesquisaComExample(String nome, String nacionalidade) {
+        Autor autor = new Autor();
+        autor.setNome(nome);
+        autor.setNacionalidade(nacionalidade);
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withIgnoreNullValues()//ignora valor nullos
+                .withIgnorePaths("id", "dataNascimento", "dataCadastro", "dataAtualizacao") // ignora campos
+                .withIgnoreCase() // ignora se estiver maiusculo ou minusculo
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // buscar por palavras
+        Example<Autor> autorExample = Example.of(autor, exampleMatcher);
+        return autorRepository.findAll(autorExample);
     }
 
     public boolean possuiAlgumLivro(Autor autor) {
