@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -37,5 +38,14 @@ public class LivroController implements GenericController {
                     var dto = mapper.toDTO(livro);
                     return ResponseEntity.ok(dto);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteById(@PathVariable("id") String id ){
+      return service.obterPorId(UUID.fromString(id))
+              .map(livro -> {
+                  service.delete(livro.getId());
+                  return ResponseEntity.noContent().build();
+              }).orElseGet( () -> ResponseEntity.notFound().build());
     }
 }
