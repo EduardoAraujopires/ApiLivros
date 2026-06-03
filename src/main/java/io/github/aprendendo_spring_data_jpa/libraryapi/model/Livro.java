@@ -44,7 +44,7 @@ public class Livro {
     @ManyToOne( fetch = FetchType.LAZY
           //  cascade = CascadeType.ALL
     )
-    @JoinColumn(name = "id_autor")
+    @JoinColumn(name = "idAutor")
     private Autor autor;
 
     @CreatedDate

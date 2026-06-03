@@ -22,12 +22,4 @@ public record AutorDTO(
         @Size(min = 3, max = 50, message = "campo fora do tamanho padrao")
         String nacionalidade
 ) {
-
-    public Autor saveComDTO(){
-        Autor autor = new Autor();
-        autor.setNome(this.nome);
-        autor.setDataNascimento(this.dataNascimento);
-        autor.setNacionalidade(this.nacionalidade);
-        return autor;
-    }
 }

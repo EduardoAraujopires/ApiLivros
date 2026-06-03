@@ -2,8 +2,9 @@ package io.github.aprendendo_spring_data_jpa.libraryapi.controller.common;
 
 import io.github.aprendendo_spring_data_jpa.libraryapi.controller.dto.ErroCampo;
 import io.github.aprendendo_spring_data_jpa.libraryapi.controller.dto.ErroResposta;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.OperacaoNaoPermitidaExcepetions;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.RegistrosDuplicadosExceptions;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,17 +19,37 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErroResposta handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
+    public ErroResposta handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getFieldErrors();
         List<ErroCampo> listErro = fieldErrors
                 .stream()
                 .map(fe -> new ErroCampo(fe.getField(), fe.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-
         return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Erro de validação."
-                ,listErro);
+                , listErro);
+    }
+
+    @ExceptionHandler(RegistrosDuplicadosExceptions.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErroResposta handleRegistrosDuplicadosExceptions(RegistrosDuplicadosExceptions e) {
+        return ErroResposta.conflito(e.getMessage());
+    }
+
+    @ExceptionHandler(OperacaoNaoPermitidaExcepetions.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResposta handleOperacaoNaoPermitidaExcepetions(OperacaoNaoPermitidaExcepetions e) {
+        return ErroResposta.respostaPadrao(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErroResposta handleErrosNaoTratados(RuntimeException e){
+        return new ErroResposta(HttpStatus.INTERNAL_SERVER_ERROR.value()
+                , "Ocorreu um erro inesperado, Entre em contato com a administração do Sistema",
+                List.of());
+
     }
 }
 
