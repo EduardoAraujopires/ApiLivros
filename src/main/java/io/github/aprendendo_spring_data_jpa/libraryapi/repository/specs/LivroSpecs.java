@@ -19,4 +19,13 @@ import org.springframework.data.jpa.domain.Specification;
         return (root, query, cb) ->
                 cb.equal(root.get("genero"), genero);
     }
+
+     public static Specification<Livro> anoPublicacaoEqual(Integer ano){
+        //select to_char(data_publicacao, 'YYYY') from livro
+        // and to_char(data_publicacao, 'YYYY') = :dataPublicacao
+         return (root, query, cb) ->
+                 cb.equal(cb.function("to_char",
+                         String.class, root.get("dataPublicacao")
+                         , cb.literal("YYYY")), ano.toString());
+     }
 }

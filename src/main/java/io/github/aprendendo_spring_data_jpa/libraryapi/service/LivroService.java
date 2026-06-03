@@ -51,6 +51,9 @@ public class LivroService {
         if (titulo != null){
             specs = specs.and(tituloLike(titulo));
         }
+        if (anoPublicacao != null){
+            specs = specs.and(anoPublicacaoEqual(anoPublicacao));
+        }
 
         return livroRepository.findAll(specs);
     }
