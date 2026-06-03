@@ -1,10 +1,13 @@
 package io.github.aprendendo_spring_data_jpa.libraryapi.service;
 
+import io.github.aprendendo_spring_data_jpa.libraryapi.model.GeneroLivro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.Livro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.LivroRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,5 +27,15 @@ public class LivroService {
 
     public void delete(UUID id){
           livroRepository.deleteById(id);
+    }
+
+    public List<Livro> pesquisa(
+            String isbn,
+            String nome,
+            GeneroLivro genero, Integer anoPublicacao){
+
+        Specification<Livro> specs = null;
+
+        return livroRepository.findAll(specs);
     }
 }

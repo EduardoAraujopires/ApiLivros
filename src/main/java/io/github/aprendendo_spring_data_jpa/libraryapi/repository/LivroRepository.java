@@ -4,6 +4,7 @@ import io.github.aprendendo_spring_data_jpa.libraryapi.model.Autor;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.GeneroLivro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +19,7 @@ import java.util.UUID;
   * @see LivroRepositoryTest
  **/
 
-public interface LivroRepository extends JpaRepository<Livro, UUID> {
+public interface LivroRepository extends JpaRepository<Livro, UUID> , JpaSpecificationExecutor<Livro> {
 
     // Query method
     // select * from livros where id_livros = id
