@@ -1,5 +1,6 @@
 package io.github.aprendendo_spring_data_jpa.libraryapi.service;
 
+import io.github.aprendendo_spring_data_jpa.libraryapi.controller.dto.CadastroLivroDTO;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.GeneroLivro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.Livro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.LivroRepository;
@@ -32,6 +33,15 @@ public class LivroService {
         livroRepository.deleteById(id);
     }
 
+    public void atualizar (Livro livro){
+
+        if(livro.getId() == null) {
+            throw new IllegalArgumentException("Para atualizar, é necessario que o livro esteje cadastrado na base de dados.");
+
+        }
+             livroRepository.save(livro);
+    }
+
     public List<Livro> pesquisa(
             String isbn,
             String titulo,
@@ -53,6 +63,9 @@ public class LivroService {
         }
         if (anoPublicacao != null){
             specs = specs.and(anoPublicacaoEqual(anoPublicacao));
+        }
+        if (nome != null){
+            specs = specs.and(nomeAutorLike(nome));
         }
 
         return livroRepository.findAll(specs);
