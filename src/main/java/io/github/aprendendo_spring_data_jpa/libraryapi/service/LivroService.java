@@ -5,6 +5,9 @@ import io.github.aprendendo_spring_data_jpa.libraryapi.model.Livro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.LivroRepository;
 import io.github.aprendendo_spring_data_jpa.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +47,15 @@ public class LivroService {
         livroRepository.save(livro);
     }
 
-    public List<Livro> pesquisa(String isbn, String titulo, String nome, GeneroLivro genero, Integer anoPublicacao) {
+    public Page<Livro> pesquisa(
+            String isbn,
+            String titulo,
+            String nome,
+            GeneroLivro genero,
+            Integer anoPublicacao,
+            Integer pagina,
+            Integer tamanhoPagina
+    ) {
         Specification<Livro> specs = Specification.where((root, query, cb) -> cb.conjunction());
 
         if (isbn != null) {
@@ -64,6 +75,8 @@ public class LivroService {
         if (nome != null) {
             specs = specs.and(nomeAutorLike(nome));
         }
-        return livroRepository.findAll(specs);
+
+        Pageable pageRequest = PageRequest.of(pagina, tamanhoPagina);
+        return livroRepository.findAll(specs, pageRequest);
     }
 }

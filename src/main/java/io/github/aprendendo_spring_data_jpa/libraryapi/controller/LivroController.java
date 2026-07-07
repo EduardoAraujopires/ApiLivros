@@ -8,6 +8,7 @@ import io.github.aprendendo_spring_data_jpa.libraryapi.model.Livro;
 import io.github.aprendendo_spring_data_jpa.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,8 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResultadoPesquisaLivroDTO>> pesquisa(
+    public ResponseEntity<Page<ResultadoPesquisaLivroDTO>>pesquisa(
+            
             @RequestParam(value = "isbn" ,  required = false)
             String isbn,
 
@@ -66,15 +68,22 @@ public class LivroController implements GenericController {
             GeneroLivro genero,
 
             @RequestParam(value = "ano-publicacao" ,  required = false)
-            Integer anoPublicacao) {
+            Integer anoPublicacao,
+
+            @RequestParam(value = "pagina", defaultValue = "0")
+            Integer pagina,
+
+            @RequestParam(value = "tamanho-pagina", defaultValue = "10")
+            Integer tamanhoPagina
+
+    ){
+        Page<Livro> paginaResultado = service.pesquisa(
+                isbn, titulo, nome, genero, anoPublicacao, pagina, tamanhoPagina);
+
+      Page<ResultadoPesquisaLivroDTO> resultadoPesquisa = paginaResultado.map(mapper::toDTO);
 
 
-        var resultado = service.pesquisa(isbn, titulo, nome, genero, anoPublicacao);
-        var lista = resultado
-                .stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
+        return ResponseEntity.ok(resultadoPesquisa);
 
     }
 
