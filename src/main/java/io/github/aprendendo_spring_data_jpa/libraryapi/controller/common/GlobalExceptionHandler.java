@@ -2,8 +2,9 @@ package io.github.aprendendo_spring_data_jpa.libraryapi.controller.common;
 
 import io.github.aprendendo_spring_data_jpa.libraryapi.controller.dto.ErroCampo;
 import io.github.aprendendo_spring_data_jpa.libraryapi.controller.dto.ErroResposta;
-import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.OperacaoNaoPermitidaExcepetions;
-import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.RegistrosDuplicadosExceptions;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.CampoInvalidoException;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.OperacaoNaoPermitidaException;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.RegistrosDuplicadosException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,16 +32,23 @@ public class GlobalExceptionHandler {
                 , listErro);
     }
 
-    @ExceptionHandler(RegistrosDuplicadosExceptions.class)
+    @ExceptionHandler(RegistrosDuplicadosException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErroResposta handleRegistrosDuplicadosExceptions(RegistrosDuplicadosExceptions e) {
+    public ErroResposta handleRegistrosDuplicadosExceptions(RegistrosDuplicadosException e) {
         return ErroResposta.conflito(e.getMessage());
     }
 
-    @ExceptionHandler(OperacaoNaoPermitidaExcepetions.class)
+    @ExceptionHandler(OperacaoNaoPermitidaException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErroResposta handleOperacaoNaoPermitidaExcepetions(OperacaoNaoPermitidaExcepetions e) {
+    public ErroResposta handleOperacaoNaoPermitidaExcepetions(OperacaoNaoPermitidaException e) {
         return ErroResposta.respostaPadrao(e.getMessage());
+    }
+
+    @ExceptionHandler(CampoInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErroResposta handleCampoInvalidoException(CampoInvalidoException e){
+        return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(),"Erro Validação"
+                , List.of(new ErroCampo(e.getCampo(), e.getMessage())));
     }
 
     @ExceptionHandler(RuntimeException.class)

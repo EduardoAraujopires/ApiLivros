@@ -1,6 +1,6 @@
 package io.github.aprendendo_spring_data_jpa.libraryapi.validator;
 
-import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.RegistrosDuplicadosExceptions;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.RegistrosDuplicadosException;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.Autor;
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.AutorRepository;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class AutorValidator {
 
     public void validar(Autor autor){
         if (existeAutorCadastrado(autor)){
-            throw new RegistrosDuplicadosExceptions("Autor já cadastrado!");
+            throw new RegistrosDuplicadosException("Autor já cadastrado!");
         }
     }
     private boolean existeAutorCadastrado(Autor autor){

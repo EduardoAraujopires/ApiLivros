@@ -1,6 +1,6 @@
 package io.github.aprendendo_spring_data_jpa.libraryapi.service;
 
-import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.OperacaoNaoPermitidaExcepetions;
+import io.github.aprendendo_spring_data_jpa.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import io.github.aprendendo_spring_data_jpa.libraryapi.model.Autor;
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.AutorRepository;
 import io.github.aprendendo_spring_data_jpa.libraryapi.repository.LivroRepository;
@@ -42,7 +42,7 @@ public class AutorService {
 
     public void delete(Autor autor) {
         if (possuiAlgumLivro(autor)) {
-            throw new OperacaoNaoPermitidaExcepetions("Nao é permitido excluir autor que tem livros cadastrados");
+            throw new OperacaoNaoPermitidaException("Nao é permitido excluir autor que tem livros cadastrados");
         }
         autorRepository.delete(autor);
     }
